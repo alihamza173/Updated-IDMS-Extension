@@ -1644,7 +1644,7 @@ async function automateInventoryMileage(accountNumber, taskConfig = {}) {
         await wait(1500);
 
         showToast("Extracting Fuel and Body Style...", "info", 3000);
-
+        await wait(4000);
         const fuelInput = document.getElementById("txtFuelType");
         if (fuelInput && isUsefulInventoryValue(fuelInput.value)) {
           extractedFuel = cleanInventoryValue(fuelInput.value);
