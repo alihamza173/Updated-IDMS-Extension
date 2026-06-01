@@ -1,0 +1,163 @@
+#reportgen-root {
+  all: initial;
+}
+
+#reportgen-root .reportgen-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 280px;
+  z-index: 2147483646;
+  font-family: Segoe UI, Tahoma, sans-serif;
+  border: 1px solid #bcd8c6;
+  border-radius: 12px;
+  background: #f6fff9;
+  box-shadow: 0 8px 28px rgba(18, 64, 40, 0.22);
+  color: #123424;
+}
+
+#reportgen-root .reportgen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid #d7eadf;
+  background: #e3f3e9;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+#reportgen-root .reportgen-header-title {
+  font-weight: 700;
+}
+
+#reportgen-root .reportgen-close {
+  border: 1px solid #78a98a;
+  background: #f1fbf4;
+  color: #17422d;
+  border-radius: 8px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  line-height: 24px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+#reportgen-root .reportgen-close:hover {
+  background: #e2f4e8;
+}
+
+#reportgen-root .reportgen-body {
+  padding: 10px;
+}
+
+#reportgen-root .reportgen-status {
+  margin: 0 0 10px;
+  font-size: 12px;
+}
+
+#reportgen-root .reportgen-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+#reportgen-root .reportgen-action {
+  border: 1px solid #2b8552;
+  background: #2b8552;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+#reportgen-root .reportgen-action:hover {
+  background: #246f45;
+}
+
+#reportgen-root .reportgen-small-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+#reportgen-root .reportgen-small-actions button {
+  flex: 1;
+  border: 1px solid #7fad90;
+  background: #f1fbf4;
+  color: #123424;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+#reportgen-root .reportgen-small-actions button:hover {
+  background: #e5f6ea;
+}
+
+#reportgen-root .reportgen-discovery-active {
+  outline: 2px dashed #e07000;
+  outline-offset: -2px;
+}
+
+.reportgen-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  background: rgba(8, 14, 24, 0.5);
+  display: grid;
+  place-items: center;
+  font-family: Segoe UI, Tahoma, sans-serif;
+}
+
+.reportgen-picker-dialog {
+  width: min(680px, calc(100vw - 24px));
+  max-height: min(70vh, 760px);
+  overflow: hidden;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #d3d9e1;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  padding: 14px;
+}
+
+.reportgen-picker-dialog h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.reportgen-picker-list {
+  display: grid;
+  gap: 8px;
+  overflow: auto;
+}
+
+.reportgen-picker-item {
+  text-align: left;
+  border: 1px solid #c7d0de;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #0f1728;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.reportgen-picker-item:hover {
+  background: #edf3ff;
+  border-color: #2e6de0;
+}
+
+.reportgen-picker-close {
+  justify-self: end;
+  border: 1px solid #9aa6ba;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f2430;
+  padding: 8px 12px;
+  cursor: pointer;
+}

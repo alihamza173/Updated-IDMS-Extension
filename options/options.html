@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Report Generator Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <main class="page">
+    <h1>Automated Report Generator</h1>
+
+    <section class="card">
+      <h2>Webhook</h2>
+      <label for="webhookUrl">Webhook URL</label>
+      <input id="webhookUrl" type="url" placeholder="https://n8n.srv1669099.hstgr.cloud/webhook/get-reports" />
+      <button id="saveWebhook" type="button">Save Webhook</button>
+    </section>
+
+    <section class="card">
+      <h2>Add Button</h2>
+      <form id="buttonForm">
+        <label for="labelInput">Label</label>
+        <input id="labelInput" type="text" required />
+
+        <label for="searchTextInput">Search Text</label>
+        <input id="searchTextInput" type="text" required />
+
+        <button id="saveButton" type="submit">Save Button</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Buttons</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Label</th>
+            <th>Search Text</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="buttonsBody"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Selector Config</h2>
+      <p>Captured in discovery mode from the popup or floating panel.</p>
+      <pre id="selectorConfigPreview">{}</pre>
+    </section>
+
+    <p id="status" role="status" aria-live="polite"></p>
+  </main>
+
+  <script src="options.js"></script>
+</body>
+</html>

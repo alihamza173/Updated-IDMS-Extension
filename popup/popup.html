@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Report Generator</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <main class="popup">
+    <h1>Report Generator</h1>
+    <button id="sendReports" type="button" class="primary-action">Send All Reports</button>
+    <button id="searchAccounts" type="button">Search Accounts</button>
+    <button id="sendBGRafayReport" type="button">Send BG Rafay Report</button>
+    <button id="sendTitanRafayReport" type="button">Send Titan Rafay Report</button>
+    <form id="accountSearchForm" style="display:none; margin-top:10px;">
+      <input id="accountNumberInput" type="text" placeholder="Enter Account Number" autocomplete="off" required style="margin-right:5px;" />
+      <button id="submitAccountSearch" type="submit">Go</button>
+    </form>
+    <button id="sendMondayReport" type="button" class="primary-action">Send Monday Report</button>
+    <button id="openOptions" type="button">Open Settings</button>
+    <button id="toggleDiscovery" type="button">Toggle Discovery Mode</button>
+    <button id="refreshPanel" type="button">Refresh In-Page Panel</button>
+    <p id="status" role="status" aria-live="polite"></p>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
