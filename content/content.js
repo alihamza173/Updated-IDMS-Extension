@@ -4,7 +4,7 @@ const STORAGE_KEYS = {
   SELECTOR_CONFIG: "selectorConfig",
   REPORT_QUEUE_STATE: "reportQueueState"
 };
- 
+  
 const REPORT_VIEWER_URL_PREFIX = "https://idms.dealersocket.com/reportviewer_v11/report11/report_viewer_rdlc.aspx";
 
 const MACHINE_STATES = {
@@ -1962,6 +1962,7 @@ async function automateAccountSearch(accountNumber, taskConfig = {}) {
       
       const latest = accountData[0];
       const isLatestActive = latest.status.includes('active');
+      const hasAnyActive = accountData.some((account) => account.status.includes('active'));
 
       // CASE 1: 1 Account & Active (SKIP)
       if (accountData.length === 1 && isLatestActive) {
@@ -1978,7 +1979,10 @@ async function automateAccountSearch(accountNumber, taskConfig = {}) {
           await sendRuntimeMessage({
              type: "START_VIN_SELLER_ONLY",
              sellerAcc: latest.accountNumber,
-             taskConfig: taskConfig
+           taskConfig: {
+             ...taskConfig,
+             isActive: hasAnyActive
+           }
           });
          await wait(1500);
          await sendRuntimeMessage({ type: "CLOSE_CURRENT_TAB" }).catch(()=>{});
@@ -1995,7 +1999,10 @@ async function automateAccountSearch(accountNumber, taskConfig = {}) {
              type: "START_VIN_EXTRACTION",
              buyerAcc: buyer.accountNumber,
              sellerAcc: seller.accountNumber,
-             taskConfig: taskConfig
+             taskConfig: {
+               ...taskConfig,
+               isActive: hasAnyActive
+             }
           });
          await wait(1500);
          await sendRuntimeMessage({ type: "CLOSE_CURRENT_TAB" }).catch(()=>{});

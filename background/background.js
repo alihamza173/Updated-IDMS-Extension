@@ -6,7 +6,6 @@ const PROCESSED_DOWNLOAD_IDS = new Set();
 const ORPHAN_DOWNLOADS = [];
 const MAX_ORPHAN_AGE_MS = 300000; // 5 minutes
 let pendingVinPayload = null;// Holds data while the Inventory tab fetches mileage
- 
 // ============================================================
 // FILE DOWNLOAD WATCHER — waits for a download to complete
 // then automatically POSTs it to the n8n webhook.
@@ -116,6 +115,7 @@ async function handleMessage(message, sender) {
       const originalN8nPayload = storage.VIN_TASK_CONFIG || {};
       const stockNumber = originalN8nPayload.stockNo || (message.taskConfig && message.taskConfig.stockNo) || "";
       const vinQuery = originalN8nPayload.searchQuery || "";
+      const isActive = Boolean(message.taskConfig?.isActive ?? originalN8nPayload.isActive ?? false);
       console.log(`[background] Original n8n payload retrieved from storage:`, originalN8nPayload);
       console.log(`[background] Stock number determined to be: "${message.taskConfig.stockNo}" (This is what will trigger the Inventory tab)`);
       console.log(`[background] VIN query determined to be: "${vinQuery}" (This is what will be used if the VIN is missing from the affidavit)`);
@@ -151,6 +151,7 @@ async function handleMessage(message, sender) {
 
       // Save to global variable so the Inventory tab can update it later
       pendingVinPayload = {
+        "IsActive": isActive,
          "repossession_affidavit": {
             "Vehicle Identification Number": sData.vin || vinQuery,
             "Year": sData.year || "",
@@ -755,8 +756,8 @@ function pruneOrphanDownloads() {
 // N8N POLLING & TASK ROUTING LOGIC
 // ==========================================
 
-// const N8N_POLL_URL = "https://n8n.srv1669099.hstgr.cloud/webhook/test-pole";
-const N8N_POLL_URL = "https://n8n.srv1669099.hstgr.cloud/webhook/get-pole";
+const N8N_POLL_URL = "https://n8n.srv1669099.hstgr.cloud/webhook/test-pole";
+// const N8N_POLL_URL = "https://n8n.srv1669099.hstgr.cloud/webhook/get-pole";
 
 // ==========================================
 // NEW: DYNAMIC TEXT-BASED QUEUES
