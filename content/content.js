@@ -1499,6 +1499,140 @@ async function automateInventoryMileage(accountNumber, taskConfig = {}) {
     return "";
   }
 
+  function hasVisibleInputWrapperTitle(labelText) {
+    const wantedLabel = cleanInventoryValue(labelText).toLowerCase();
+    const wrappers = Array.from(document.querySelectorAll(".inputWrapper"));
+
+    return wrappers.some((wrapper) => {
+      if (!isVisible(wrapper)) {
+        return false;
+      }
+
+      const title = wrapper.querySelector(".inputWrapperTitle");
+      return cleanInventoryValue(title?.textContent).toLowerCase() === wantedLabel;
+    });
+  }
+
+  function hasVisibleVehicleFuelField() {
+    const fuelInput = document.getElementById("txtFuelType");
+    if (fuelInput && isVisible(fuelInput)) {
+      return true;
+    }
+
+    const fuelSelect = document.getElementById("ddlFuelType");
+    if (fuelSelect && isVisible(fuelSelect)) {
+      return true;
+    }
+
+    return hasVisibleInputWrapperTitle("Fuel:");
+  }
+
+  function extractFuelValue() {
+    const fuelInput = document.getElementById("txtFuelType");
+    if (fuelInput && isUsefulInventoryValue(fuelInput.value)) {
+      return cleanInventoryValue(fuelInput.value);
+    }
+
+    const wrapperFuel = extractInputValueByTitle("Fuel:");
+    if (wrapperFuel) {
+      return wrapperFuel;
+    }
+
+    const fuelSelect = document.getElementById("ddlFuelType");
+    if (fuelSelect) {
+      const selectedOpt = fuelSelect.options[fuelSelect.selectedIndex];
+      if (selectedOpt && isUsefulInventoryValue(selectedOpt.value) && isUsefulInventoryValue(selectedOpt.text)) {
+        return cleanInventoryValue(selectedOpt.text);
+      }
+    }
+
+    return "";
+  }
+
+  async function waitForLoadersToClear(maxWaitMs = 45000) {
+    const start = Date.now();
+    let clearSince = 0;
+
+    while (Date.now() - start < maxWaitMs) {
+      ensureNotCanceled();
+
+      if (isLoadingIndicatorVisible()) {
+        clearSince = 0;
+        await wait(1000);
+        continue;
+      }
+
+      if (!clearSince) {
+        clearSince = Date.now();
+      }
+
+      if (Date.now() - clearSince >= 1200) {
+        return true;
+      }
+
+      await wait(300);
+    }
+
+    return !isLoadingIndicatorVisible();
+  }
+
+  async function waitForVehicleFuelReady(maxWaitMs = 45000) {
+    const start = Date.now();
+    let fieldSeenSince = 0;
+
+    while (Date.now() - start < maxWaitMs) {
+      ensureNotCanceled();
+
+      if (isLoadingIndicatorVisible()) {
+        fieldSeenSince = 0;
+        await wait(1000);
+        continue;
+      }
+
+      const fuelFieldVisible = hasVisibleVehicleFuelField();
+      const fuel = fuelFieldVisible ? extractFuelValue() : "";
+      if (fuel) {
+        return true;
+      }
+
+      if (fuelFieldVisible) {
+        if (!fieldSeenSince) {
+          fieldSeenSince = Date.now();
+        }
+
+        if (Date.now() - fieldSeenSince >= 5000) {
+          return true;
+        }
+      } else {
+        fieldSeenSince = 0;
+      }
+
+      await wait(500);
+    }
+
+    return false;
+  }
+
+  async function openVehicleTabAndWaitForFields() {
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const vehicleTab = await findAndRevealTab("span#Vehicle");
+      if (!vehicleTab) {
+        return false;
+      }
+
+      showToast(attempt === 1 ? "Clicking Vehicle tab..." : `Re-opening Vehicle tab (${attempt}/3)...`, "info", 2000);
+      safeClick(vehicleTab);
+      try { vehicleTab.click(); } catch (e) {}
+
+      await waitForLoadersToClear(45000);
+      if (await waitForVehicleFuelReady(45000)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   try {
     showToast("Inventory Page Reached! Waiting for loaders...", "warning", 3000);
 
@@ -1630,37 +1764,9 @@ async function automateInventoryMileage(accountNumber, taskConfig = {}) {
 
       extractedBodyStyle = extractInventoryCardValue("Body Style:");
 
-      const vehicleTab = await findAndRevealTab("span#Vehicle");
-      if (vehicleTab) {
-        showToast("Clicking Vehicle tab...", "info", 2000);
-        safeClick(vehicleTab);
-        try { vehicleTab.click(); } catch (e) {}
-
-        await wait(1500);
-        for (let w = 0; w < 15; w++) {
-          if (!isLoadingIndicatorVisible()) break;
-          await wait(1000);
-        }
-        await wait(1500);
-
+      if (await openVehicleTabAndWaitForFields()) {
         showToast("Extracting Fuel and Body Style...", "info", 3000);
-        await wait(4000);
-        const fuelInput = document.getElementById("txtFuelType");
-        if (fuelInput && isUsefulInventoryValue(fuelInput.value)) {
-          extractedFuel = cleanInventoryValue(fuelInput.value);
-        }
-
-        if (!extractedFuel) {
-          extractedFuel = extractInputValueByTitle("Fuel:");
-        }
-
-        const fuelSelect = document.getElementById("ddlFuelType");
-        if (!extractedFuel && fuelSelect) {
-          const selectedOpt = fuelSelect.options[fuelSelect.selectedIndex];
-          if (selectedOpt && isUsefulInventoryValue(selectedOpt.value) && isUsefulInventoryValue(selectedOpt.text)) {
-            extractedFuel = cleanInventoryValue(selectedOpt.text);
-          }
-        }
+        extractedFuel = extractFuelValue();
 
         if (!extractedBodyStyle) {
           extractedBodyStyle = extractInventoryCardValue("Body Style:");
@@ -1668,7 +1774,7 @@ async function automateInventoryMileage(accountNumber, taskConfig = {}) {
 
         showToast(`Fuel: ${extractedFuel || "Not found"} | Style: ${extractedBodyStyle || "Not found"}`, "success", 4000);
       } else {
-        showToast("Could not find Vehicle tab.", "error", 3000);
+        showToast("Could not load Vehicle tab fields.", "error", 3000);
       }
     }
 
